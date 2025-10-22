@@ -10,8 +10,9 @@ import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import type { ApiProduct } from "./lib/api";
 import { isAuthenticated } from "./lib/auth";
+import type { ReactElement } from "react";
 
-function PrivateRoute({ children }: { children: JSX.Element }) {
+function PrivateRoute({ children }: { children: ReactElement }) {
   return isAuthenticated() ? children : <Navigate to="/login" replace />;
 }
 
