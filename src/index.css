@@ -1,0 +1,5 @@
+
+
+@import "tailwindcss";
+/* Opcional pero recomendado para Vite + v4 */
+@source "./src";
