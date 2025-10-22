@@ -59,4 +59,4 @@ App.tsx
 main.tsx
 index.css # Tailwind v4: @import "tailwindcss";
 public/
-(assets estáticos opcionales)
+(assets estáticos opcionales).
