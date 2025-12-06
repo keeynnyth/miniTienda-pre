@@ -2,17 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import type { ApiProduct } from "../lib/api";
 import { fetchProductById } from "../lib/api";
 import { money } from "../lib/format";
+import { useSEO } from "../lib/useSEO";
 
-type Props = { onAdd: (p: ApiProduct) => void };
 
-export default function Product({ onAdd }: Props) {
+export default function Product({ onAdd }) {
   const { id } = useParams();
-  const [p, setP] = useState<ApiProduct | null>(null);
+  const [p, setP] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!id) return;
@@ -20,14 +19,9 @@ export default function Product({ onAdd }: Props) {
     setLoading(true);
     fetchProductById(id)
       .then((d) => alive && setP(d))
-      .catch((e: unknown) => {
-        const msg = e instanceof Error ? e.message : "Error desconocido";
-        if (alive) setError(msg);
-      })
+      .catch((e) => alive && setError(e.message || "Error"))
       .finally(() => alive && setLoading(false));
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, [id]);
 
   if (loading) {
@@ -44,7 +38,7 @@ export default function Product({ onAdd }: Props) {
     );
   }
 
-  if (error || !p) return <p className="text-red-600">{error ?? "No encontrado"}</p>;
+  if (error || !p) return <p className="text-red-600">{error || "No encontrado"}</p>;
 
   return (
     <article className="grid gap-6 md:grid-cols-2">
@@ -63,4 +57,10 @@ export default function Product({ onAdd }: Props) {
       </div>
     </article>
   );
+useSEO({
+  title: producto ? `${producto.title} • MiniTienda` : "Producto • MiniTienda",
+  description: `Detalle del producto ${producto?.title ?? ""} en MiniTienda.`,
+});
+ 
 }
+

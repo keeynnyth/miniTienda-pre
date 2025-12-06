@@ -1,0 +1,14 @@
+[
+  { "id": 1,  "title": "Fjallraven - Foldsack No. 1 Backpack", "price": 109.95, "image": "/img/1.webp" },
+  { "id": 2,  "title": "Mens Casual Premium Slim Fit T-Shirts", "price": 22.3,  "image": "/img/2.jpg" },
+  { "id": 3,  "title": "Mens Cotton Jacket",                  "price": 55.99, "image": "/img/3.jpg" },
+  { "id": 4,  "title": "Mens Casual Slim Fit",                 "price": 15.99, "image": "/img/4.webp" },
+  { "id": 5,  "title": "John Hardy Women's Legends Naga",      "price": 695,   "image": "/img/5.jpg" },
+  { "id": 6,  "title": "Solid Gold Petite Micropave",          "price": 168,   "image": "/img/6.jpg" },
+  { "id": 7,  "title": "White Gold Plated Princess",           "price": 9.99,  "image": "/img/7.jpg" },
+  { "id": 8,  "title": "Pierced Owl Rose Gold",                "price": 10.99, "image": "/img/8.jpg" },
+  { "id": 9,  "title": "WD 2TB External Hard Drive",           "price": 64,    "image": "/img/9.jpg" },
+  { "id": 10, "title": "SanDisk SSD PLUS 1TB",                 "price": 109,   "image": "/img/10.jpg" },
+  { "id": 11, "title": "Silicon Power 256GB SSD",              "price": 109,   "image": "/img/11.jpg" },
+  { "id": 12, "title": "WD 4TB Portable External HDD",         "price": 114,   "image": "/img/12.jpg" }
+]
