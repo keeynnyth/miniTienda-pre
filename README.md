@@ -84,8 +84,6 @@ React Icons, React Toastify
 MockAPI para persistencia de productos
 
  Estructura (resumen)
-python
-Copiar código
 src/
 ├─ components/
 │  ├─ Navbar.jsx
