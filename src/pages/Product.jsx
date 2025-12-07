@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchProductById } from "../lib/api";
+import { getProduct } from "../lib/api";
 import { money } from "../lib/format";
 import { useSEO } from "../lib/useSEO";
 

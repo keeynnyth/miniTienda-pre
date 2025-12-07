@@ -54,6 +54,15 @@ export default function Home({ onAdd }) {
       )}
     </section>
   );
+
+  const errText = error ? (error.message || String(error)) : "";
+
+<div className="small text-muted mt-1">
+  {loading ? "Cargando…" : error ? `Error: ${errText}` : `Mostrando ${data.length} de ${total}`}
+</div>
+
+{error && <div className="text-danger">Error: {errText}</div>}
+
 }
 
 

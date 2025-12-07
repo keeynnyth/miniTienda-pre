@@ -1,85 +1,103 @@
 
-
-import { Link } from "react-router-dom";
-import { useProducts } from "../context/ProductsContext";
-import { money } from "../lib/format";
-import { useState } from "react";
-import { productsApi } from "../lib/productsApi";
+// src/pages/AdminProducts.jsx
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { toast } from "react-toastify";
+import { getProducts, deleteProduct } from "../lib/api"; // <- tus helpers a MockAPI
 
 export default function AdminProducts() {
-  const { items, loading, error, deleteProduct } = useProducts();
-  const [busyId, setBusyId] = useState(null);
-  const [msg, setMsg] = useState(null);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const nav = useNavigate();
 
-  if (!productsApi.enabled) {
-    return <p className="text-red-600">MockAPI no configurada (VITE_MOCKAPI_BASE).</p>;
-  }
-  if (loading) return <p>Cargando…</p>;
-  if (error) return <p className="text-red-600">Error: {error}</p>;
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getProducts();
+        setItems(data);
+      } catch (err) {
+        console.error(err);
+        toast.error("No se pudieron cargar los productos");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
-  async function onDelete(id) {
-    if (!window.confirm("¿Eliminar este producto? Esta acción no se puede deshacer.")) return;
+  const onDelete = async (id, title) => {
+    const ok = confirm(`¿Eliminar "${title}"? Esta acción no se puede deshacer.`);
+    if (!ok) return;
     try {
-      setBusyId(id);
-      await deleteProduct(id);          // <- contexto
-      setMsg("Producto eliminado.");
-      setTimeout(() => setMsg(null), 1500);
-    } catch (e) {
-      alert(e.message || "No se pudo eliminar");
-    } finally {
-      setBusyId(null);
+      await deleteProduct(id);
+      setItems((prev) => prev.filter((p) => p.id !== id));
+      toast.success("Producto eliminado");
+    } catch (err) {
+      console.error(err);
+      toast.error("No se pudo eliminar");
     }
-  }
+  };
+
+  if (loading) return <p>Cargando…</p>;
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Productos (Admin)</h1>
-        <Link to="/admin/products/new" className="rounded-xl border px-3 py-2 hover:bg-black/5">
-          + Nuevo
+    <section className="py-3">
+      {/* Título + acción Nuevo alineada a la derecha */}
+      <div className="d-flex align-items-center justify-content-between mb-3">
+        <h1 className="display-6 fw-semibold m-0">Productos (Admin)</h1>
+
+        <Link
+          to="/admin/products/new"
+          className="btn btn-dark btn-pill btn-hover-lift d-inline-flex align-items-center gap-2"
+        >
+          <FiPlus /> Nuevo
         </Link>
       </div>
 
-      <div className="overflow-auto rounded-2xl border">
-        <table className="min-w-full text-sm">
-          <thead className="bg-black/5">
+      <div className="table-responsive">
+        <table className="table align-middle">
+          <thead className="table-light">
             <tr>
-              <th className="px-3 py-2 text-left">ID</th>
-              <th className="px-3 py-2 text-left">Título</th>
-              <th className="px-3 py-2 text-left">Precio</th>
-              <th className="px-3 py-2 text-left">Imagen</th>
-              <th className="px-3 py-2"></th>
+              <th style={{ width: 60 }}>ID</th>
+              <th>Título</th>
+              <th style={{ width: 140 }}>Precio</th>
+              <th style={{ width: 180 }}>Imagen</th>
+              <th style={{ width: 180 }} className="text-end">
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody>
-            {items.map((r) => (
-              <tr key={r.id} className="border-t">
-                <td className="px-3 py-2">{r.id}</td>
-                <td className="px-3 py-2">{r.title}</td>
-                <td className="px-3 py-2">{money(Number(r.price) || 0)}</td>
-                <td className="px-3 py-2">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={r.image}
-                      alt={r.title}
-                      loading="lazy"
-                      className="h-12 w-12 rounded-xl object-cover bg-black/5 border"
-                      onError={(e) => { e.currentTarget.src = "/placeholder.jpg"; }}
-                    />
-                    <span className="line-clamp-1 max-w-[18rem] text-xs opacity-70">{r.image}</span>
-                  </div>
+            {items.map((p) => (
+              <tr key={p.id}>
+                <td>{p.id}</td>
+                <td className="text-truncate" style={{ maxWidth: 380 }}>{p.title}</td>
+                <td>US$ {Number(p.price).toLocaleString("es-AR", { minimumFractionDigits: 2 })}</td>
+                <td className="d-flex align-items-center gap-2">
+                  <img
+                    src={p.image}
+                    alt={p.title}
+                    width={44}
+                    height={44}
+                    style={{ objectFit: "cover", borderRadius: 8, border: "1px solid rgba(0,0,0,.08)" }}
+                    loading="lazy"
+                  />
+                  <small className="text-secondary text-truncate">{p.image}</small>
                 </td>
-                <td className="px-3 py-2 text-right">
-                  <div className="flex gap-2 justify-end">
-                    <Link to={`/admin/products/${r.id}/edit`} className="rounded-xl border px-3 py-1 hover:bg-black/5">
-                      Editar
-                    </Link>
+                <td>
+                  <div className="d-flex justify-content-end gap-2">
                     <button
-                      onClick={() => onDelete(r.id)}
-                      disabled={busyId === r.id}
-                      className="rounded-xl border px-3 py-1 hover:bg-black/5 disabled:opacity-50"
+                      className="btn btn-soft-primary btn-sm btn-pill d-inline-flex align-items-center gap-1"
+                      onClick={() => nav(`/admin/products/${p.id}/edit`)}
                     >
-                      {busyId === r.id ? "Eliminando…" : "Eliminar"}
+                      <FiEdit2 /> Editar
+                    </button>
+
+                    <button
+                      className="btn btn-soft-danger btn-sm btn-pill d-inline-flex align-items-center gap-1"
+                      onClick={() => onDelete(p.id, p.title)}
+                    >
+                      <FiTrash2 /> Eliminar
                     </button>
                   </div>
                 </td>
@@ -87,14 +105,14 @@ export default function AdminProducts() {
             ))}
             {items.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-3 py-6 text-center opacity-70">No hay productos.</td>
+                <td colSpan={5} className="text-center py-5 text-secondary">
+                  No hay productos cargados.
+                </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-
-      {msg && <p className="text-green-700">{msg}</p>}
     </section>
   );
 }
